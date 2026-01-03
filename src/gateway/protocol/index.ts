@@ -260,6 +260,52 @@ export function formatValidationErrors(
   errors: ErrorObject[] | null | undefined,
 ) {
   if (!errors) return "unknown validation error";
+
+  // Special-case discriminated union errors for cron params
+  for (const err of errors) {
+    const path = err.instancePath || "";
+
+    // sessionTarget must be literal 'main' or 'isolated'
+    // (handles type, enum, const, and anyOf errors)
+    if (
+      path === "/sessionTarget" &&
+      (err.keyword === "type" ||
+        err.keyword === "enum" ||
+        err.keyword === "const" ||
+        (err.keyword === "anyOf" && err.message?.includes("not match")))
+    ) {
+      return "sessionTarget must be 'main' or 'isolated'";
+    }
+
+    // Check if this is a union type mismatch for schedule/payload
+    // (not a specific branch constraint failure)
+    const isUnionMismatch =
+      err.keyword === "type" ||
+      err.keyword === "required" ||
+      (err.keyword === "anyOf" && err.message?.includes("not match"));
+
+    if (!isUnionMismatch) continue;
+
+    // schedule must be discriminated union with kind field
+    if (path === "/schedule" && err.params?.type === "object") {
+      return (
+        "schedule must be one of: " +
+        "{ kind: 'at', atMs: number }, " +
+        "{ kind: 'every', everyMs: number, anchorMs?: number }, " +
+        "{ kind: 'cron', expr: string, tz?: string }"
+      );
+    }
+
+    // payload must be discriminated union with kind field
+    if (path === "/payload" && err.params?.type === "object") {
+      return (
+        "payload must be one of: " +
+        "{ kind: 'systemEvent', text: string }, " +
+        "{ kind: 'agentTurn', message: string, ... }"
+      );
+    }
+  }
+
   return ajv.errorsText(errors, { separator: "; " });
 }
 
