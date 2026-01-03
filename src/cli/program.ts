@@ -19,6 +19,7 @@ import { registerBrowserCli } from "./browser-cli.js";
 import { registerCanvasCli } from "./canvas-cli.js";
 import { registerCronCli } from "./cron-cli.js";
 import { createDefaultDeps } from "./deps.js";
+import { registerDiscordCli } from "./discord-cli.js";
 import { registerDnsCli } from "./dns-cli.js";
 import { registerGatewayCli } from "./gateway-cli.js";
 import { registerHooksCli } from "./hooks-cli.js";
@@ -397,6 +398,7 @@ Examples:
   registerNodesCli(program);
   registerTuiCli(program);
   registerCronCli(program);
+  registerDiscordCli(program);
   registerDnsCli(program);
   registerHooksCli(program);
 
