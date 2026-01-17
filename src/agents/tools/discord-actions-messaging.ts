@@ -263,8 +263,20 @@ export async function handleDiscordMessagingAction(
         typeof autoArchiveMinutesRaw === "number" && Number.isFinite(autoArchiveMinutesRaw)
           ? autoArchiveMinutesRaw
           : undefined;
-      const typeRaw = messageId === undefined ? params.type : undefined;
-      const type = typeof typeRaw === "number" && Number.isFinite(typeRaw) ? typeRaw : undefined;
+      let type: 11 | 12 | undefined;
+      if (messageId === undefined) {
+        const typeRaw = params.type;
+        if (
+          typeof typeRaw !== "number" ||
+          !Number.isFinite(typeRaw) ||
+          (typeRaw !== 11 && typeRaw !== 12)
+        ) {
+          throw new Error(
+            "Discord standalone thread creation requires type=11 (public) or type=12 (private).",
+          );
+        }
+        type = typeRaw;
+      }
       const thread = await createThreadDiscord(channelId, {
         name,
         messageId,

@@ -1,5 +1,5 @@
 import { RateLimitError } from "@buape/carbon";
-import { Routes } from "discord-api-types/v10";
+import { ChannelType, Routes } from "discord-api-types/v10";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -82,10 +82,14 @@ describe("sendMessageDiscord", () => {
   it("creates a thread without a message with a type", async () => {
     const { rest, postMock } = makeRest();
     postMock.mockResolvedValue({ id: "t1" });
-    await createThreadDiscord("chan1", { name: "thread", type: 11 }, { rest, token: "t" });
+    await createThreadDiscord(
+      "chan1",
+      { name: "thread", type: ChannelType.GuildPublicThread },
+      { rest, token: "t" },
+    );
     expect(postMock).toHaveBeenCalledWith(
       "/channels/chan1/threads",
-      expect.objectContaining({ body: { name: "thread", type: 11 } }),
+      expect.objectContaining({ body: { name: "thread", type: ChannelType.GuildPublicThread } }),
     );
   });
 
@@ -94,7 +98,7 @@ describe("sendMessageDiscord", () => {
     postMock.mockResolvedValue({ id: "t1" });
     await createThreadDiscord(
       "chan1",
-      { name: "thread", messageId: "m1", type: 11 },
+      { name: "thread", messageId: "m1", type: ChannelType.GuildPublicThread },
       { rest, token: "t" },
     );
     expect(postMock).toHaveBeenCalledWith(

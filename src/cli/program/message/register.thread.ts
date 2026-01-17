@@ -16,7 +16,7 @@ export function registerMessageThreadCommands(message: Command, helpers: Message
     .option("--channel-id <id>", "Channel id (defaults to --to)")
     .option("--message-id <id>", "Message id (optional)")
     .option("--auto-archive-min <n>", "Thread auto-archive minutes")
-    .option("--thread-type <n>", "Thread type (10 announcement, 11 public, 12 private)")
+    .option("--thread-type <n>", "Thread type for standalone threads (11 public, 12 private)")
     .action(async (opts) => {
       await helpers.runMessageAction("thread-create", opts);
     });

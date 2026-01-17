@@ -1,5 +1,5 @@
 import type { APIMessage } from "discord-api-types/v10";
-import { Routes } from "discord-api-types/v10";
+import { ChannelType, Routes } from "discord-api-types/v10";
 import { resolveDiscordRest } from "./send.shared.js";
 import type {
   DiscordMessageEdit,
@@ -95,6 +95,15 @@ export async function createThreadDiscord(
   const rest = resolveDiscordRest(opts);
   if (payload.messageId === undefined && payload.type === undefined) {
     throw new Error("type is required when creating a thread without messageId");
+  }
+  if (
+    payload.messageId === undefined &&
+    payload.type !== ChannelType.GuildPublicThread &&
+    payload.type !== ChannelType.GuildPrivateThread
+  ) {
+    throw new Error(
+      "Invalid thread type for standalone thread creation. Expected ChannelType.GuildPublicThread (11) or ChannelType.GuildPrivateThread (12).",
+    );
   }
   const body: Record<string, unknown> = { name: payload.name };
   if (payload.autoArchiveMinutes) {

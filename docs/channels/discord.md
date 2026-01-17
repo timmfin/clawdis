@@ -331,7 +331,7 @@ Reaction notifications use `guilds.<id>.reactionNotifications`:
 | polls | enabled | Create polls |
 | permissions | enabled | Channel permission snapshot |
 | messages | enabled | Read/send/edit/delete |
-| threads | enabled | Create/list/reply/rename/delete |
+| threads | enabled | Create/list/reply/rename/delete (standalone create requires type 11/12) |
 | pins | enabled | Pin/unpin/list |
 | search | enabled | Message search (preview feature) |
 | memberInfo | enabled | Member info |

@@ -216,13 +216,23 @@ Use `discord.actions.*` to disable action groups:
   "action": "threadCreate",
   "channelId": "123",
   "name": "Bug triage",
-  "messageId": "456",
-  "type": 11
+  "messageId": "456"
 }
 ```
 
 - `messageId` is optional. If omitted, creates a standalone thread in the channel.
-- `type`: required when `messageId` is omitted (10 = announcement thread, 11 = public thread, 12 = private thread). Ignored when `messageId` is set.
+- `type`: required when `messageId` is omitted; use `ChannelType.GuildPublicThread` (11) or `ChannelType.GuildPrivateThread` (12). Ignored when `messageId` is set.
+
+Standalone thread example:
+
+```json
+{
+  "action": "threadCreate",
+  "channelId": "123",
+  "name": "Bug triage",
+  "type": 11
+}
+```
 
 **Rename or delete a thread:**
 

@@ -185,11 +185,18 @@ export async function handleDiscordMessageAction(
     const autoArchiveMinutes = readNumberParam(params, "autoArchiveMin", {
       integer: true,
     });
-    const type =
-      messageId !== undefined
-        ? undefined
-        : (readNumberParam(params, "type", { integer: true }) ??
-          readNumberParam(params, "threadType", { integer: true }));
+    let type: 11 | 12 | undefined;
+    if (messageId === undefined) {
+      const typeRaw =
+        readNumberParam(params, "type", { integer: true }) ??
+        readNumberParam(params, "threadType", { integer: true });
+      if (typeRaw !== 11 && typeRaw !== 12) {
+        throw new Error(
+          "Discord standalone thread creation requires --thread-type 11 (public) or 12 (private).",
+        );
+      }
+      type = typeRaw;
+    }
     return await handleDiscordAction(
       {
         action: "threadCreate",

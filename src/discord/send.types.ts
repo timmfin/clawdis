@@ -55,6 +55,8 @@ export type DiscordPermissionsSummary = {
   channelType?: number;
 };
 
+import { ChannelType } from "discord-api-types/v10";
+
 export type DiscordMessageQuery = {
   limit?: number;
   before?: string;
@@ -70,7 +72,7 @@ export type DiscordThreadCreate = {
   messageId?: string;
   name: string;
   autoArchiveMinutes?: number;
-  type?: number;
+  type?: ChannelType.GuildPublicThread | ChannelType.GuildPrivateThread;
 };
 
 export type DiscordThreadList = {
