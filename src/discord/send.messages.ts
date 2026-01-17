@@ -93,11 +93,20 @@ export async function createThreadDiscord(
   opts: DiscordReactOpts = {},
 ) {
   const rest = resolveDiscordRest(opts);
+  if (payload.messageId === undefined && payload.type === undefined) {
+    throw new Error("type is required when creating a thread without messageId");
+  }
   const body: Record<string, unknown> = { name: payload.name };
   if (payload.autoArchiveMinutes) {
     body.auto_archive_duration = payload.autoArchiveMinutes;
   }
-  const route = Routes.threads(channelId, payload.messageId);
+  // Discord only allows `type` when starting a thread without a message.
+  if (payload.messageId === undefined && payload.type !== undefined) {
+    body.type = payload.type;
+  }
+  const route = payload.messageId
+    ? Routes.threads(channelId, payload.messageId)
+    : `/channels/${channelId}/threads`;
   return await rest.post(route, { body });
 }
 

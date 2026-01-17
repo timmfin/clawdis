@@ -318,7 +318,7 @@ Core actions:
 - `react` / `reactions` / `read` / `edit` / `delete`
 - `pin` / `unpin` / `list-pins`
 - `permissions`
-- `thread-create` / `thread-list` / `thread-reply`
+- `thread-create` / `thread-list` / `thread-reply` / `thread-delete` / `thread-rename`
 - `search`
 - `sticker`
 - `member-info` / `role-info`

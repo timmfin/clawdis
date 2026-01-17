@@ -2,7 +2,9 @@ import type { AgentToolResult } from "@mariozechner/pi-agent-core";
 import type { DiscordActionConfig } from "../../config/config.js";
 import {
   createThreadDiscord,
+  deleteChannelDiscord,
   deleteMessageDiscord,
+  editChannelDiscord,
   editMessageDiscord,
   fetchChannelPermissionsDiscord,
   fetchMessageDiscord,
@@ -261,10 +263,13 @@ export async function handleDiscordMessagingAction(
         typeof autoArchiveMinutesRaw === "number" && Number.isFinite(autoArchiveMinutesRaw)
           ? autoArchiveMinutesRaw
           : undefined;
+      const typeRaw = messageId === undefined ? params.type : undefined;
+      const type = typeof typeRaw === "number" && Number.isFinite(typeRaw) ? typeRaw : undefined;
       const thread = await createThreadDiscord(channelId, {
         name,
         messageId,
         autoArchiveMinutes,
+        type,
       });
       return jsonResult({ ok: true, thread });
     }
@@ -309,6 +314,27 @@ export async function handleDiscordMessagingAction(
         replyTo,
       });
       return jsonResult({ ok: true, result });
+    }
+    case "threadDelete": {
+      if (!isActionEnabled("threads")) {
+        throw new Error("Discord threads are disabled.");
+      }
+      const channelId = readStringParam(params, "channelId", {
+        required: true,
+      });
+      await deleteChannelDiscord(channelId);
+      return jsonResult({ ok: true });
+    }
+    case "threadRename": {
+      if (!isActionEnabled("threads")) {
+        throw new Error("Discord threads are disabled.");
+      }
+      const channelId = readStringParam(params, "channelId", {
+        required: true,
+      });
+      const name = readStringParam(params, "name", { required: true });
+      await editChannelDiscord({ channelId, name });
+      return jsonResult({ ok: true });
     }
     case "pinMessage": {
       if (!isActionEnabled("pins")) {

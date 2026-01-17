@@ -209,14 +209,39 @@ Use `discord.actions.*` to disable action groups:
 
 ### Threads
 
+**Create a thread (from message or standalone):**
+
 ```json
 {
   "action": "threadCreate",
   "channelId": "123",
   "name": "Bug triage",
-  "messageId": "456"
+  "messageId": "456",
+  "type": 11
 }
 ```
+
+- `messageId` is optional. If omitted, creates a standalone thread in the channel.
+- `type`: required when `messageId` is omitted (10 = announcement thread, 11 = public thread, 12 = private thread). Ignored when `messageId` is set.
+
+**Rename or delete a thread:**
+
+```json
+{
+  "action": "threadRename",
+  "channelId": "777",
+  "name": "New Name"
+}
+```
+
+```json
+{
+  "action": "threadDelete",
+  "channelId": "777"
+}
+```
+
+**List and Reply:**
 
 ```json
 {

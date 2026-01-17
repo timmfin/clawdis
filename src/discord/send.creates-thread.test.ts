@@ -70,6 +70,39 @@ describe("sendMessageDiscord", () => {
     );
   });
 
+  it("requires type when creating a thread without a message", async () => {
+    const { rest, postMock } = makeRest();
+    postMock.mockResolvedValue({ id: "t1" });
+    await expect(
+      createThreadDiscord("chan1", { name: "thread" }, { rest, token: "t" }),
+    ).rejects.toThrow(/type is required/i);
+    expect(postMock).not.toHaveBeenCalled();
+  });
+
+  it("creates a thread without a message with a type", async () => {
+    const { rest, postMock } = makeRest();
+    postMock.mockResolvedValue({ id: "t1" });
+    await createThreadDiscord("chan1", { name: "thread", type: 11 }, { rest, token: "t" });
+    expect(postMock).toHaveBeenCalledWith(
+      "/channels/chan1/threads",
+      expect.objectContaining({ body: { name: "thread", type: 11 } }),
+    );
+  });
+
+  it("does not send type when creating a thread from a message", async () => {
+    const { rest, postMock } = makeRest();
+    postMock.mockResolvedValue({ id: "t1" });
+    await createThreadDiscord(
+      "chan1",
+      { name: "thread", messageId: "m1", type: 11 },
+      { rest, token: "t" },
+    );
+    expect(postMock).toHaveBeenCalledWith(
+      Routes.threads("chan1", "m1"),
+      expect.objectContaining({ body: { name: "thread" } }),
+    );
+  });
+
   it("lists active threads by guild", async () => {
     const { rest, getMock } = makeRest();
     getMock.mockResolvedValue({ threads: [] });

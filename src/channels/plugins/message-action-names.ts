@@ -13,6 +13,8 @@ export const CHANNEL_MESSAGE_ACTION_NAMES = [
   "thread-create",
   "thread-list",
   "thread-reply",
+  "thread-delete",
+  "thread-rename",
   "search",
   "sticker",
   "member-info",

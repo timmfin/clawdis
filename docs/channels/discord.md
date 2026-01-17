@@ -331,7 +331,7 @@ Reaction notifications use `guilds.<id>.reactionNotifications`:
 | polls | enabled | Create polls |
 | permissions | enabled | Channel permission snapshot |
 | messages | enabled | Read/send/edit/delete |
-| threads | enabled | Create/list/reply |
+| threads | enabled | Create/list/reply/rename/delete |
 | pins | enabled | Pin/unpin/list |
 | search | enabled | Message search (preview feature) |
 | memberInfo | enabled | Member info |
@@ -372,7 +372,7 @@ The agent can call `discord` with actions like:
 - `sticker`, `poll`, `permissions`
 - `readMessages`, `sendMessage`, `editMessage`, `deleteMessage`
 - Read/search/pin tool payloads include normalized `timestampMs` (UTC epoch ms) and `timestampUtc` alongside raw Discord `timestamp`.
-- `threadCreate`, `threadList`, `threadReply`
+- `threadCreate` (from message or standalone), `threadList`, `threadReply`, `threadDelete`, `threadRename`
 - `pinMessage`, `unpinMessage`, `listPins`
 - `searchMessages`, `memberInfo`, `roleInfo`, `roleAdd`, `roleRemove`, `emojiList`
 - `channelInfo`, `channelList`, `voiceStatus`, `eventList`, `eventCreate`

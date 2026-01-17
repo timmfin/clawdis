@@ -31,6 +31,8 @@ export const discordMessageActions: ChannelMessageActionAdapter = {
       actions.add("thread-create");
       actions.add("thread-list");
       actions.add("thread-reply");
+      actions.add("thread-delete");
+      actions.add("thread-rename");
     }
     if (gate("search")) actions.add("search");
     if (gate("stickers")) actions.add("sticker");
@@ -80,7 +82,7 @@ export const discordMessageActions: ChannelMessageActionAdapter = {
     }
     return null;
   },
-  handleAction: async ({ action, params, cfg }) => {
-    return await handleDiscordMessageAction({ action, params, cfg });
+  handleAction: async (ctx) => {
+    return await handleDiscordMessageAction(ctx);
   },
 };

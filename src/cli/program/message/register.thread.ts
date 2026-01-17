@@ -16,6 +16,7 @@ export function registerMessageThreadCommands(message: Command, helpers: Message
     .option("--channel-id <id>", "Channel id (defaults to --to)")
     .option("--message-id <id>", "Message id (optional)")
     .option("--auto-archive-min <n>", "Thread auto-archive minutes")
+    .option("--thread-type <n>", "Thread type (10 announcement, 11 public, 12 private)")
     .action(async (opts) => {
       await helpers.runMessageAction("thread-create", opts);
     });
@@ -51,5 +52,28 @@ export function registerMessageThreadCommands(message: Command, helpers: Message
     .option("--reply-to <id>", "Reply-to message id")
     .action(async (opts) => {
       await helpers.runMessageAction("thread-reply", opts);
+    });
+
+  helpers
+    .withMessageBase(
+      thread
+        .command("delete")
+        .description("Delete a thread")
+        .requiredOption("--thread-id <id>", "Thread id"),
+    )
+    .action(async (opts) => {
+      await helpers.runMessageAction("thread-delete", opts);
+    });
+
+  helpers
+    .withMessageBase(
+      thread
+        .command("rename")
+        .description("Rename a thread")
+        .requiredOption("--thread-id <id>", "Thread id")
+        .requiredOption("--thread-name <name>", "New thread name"),
+    )
+    .action(async (opts) => {
+      await helpers.runMessageAction("thread-rename", opts);
     });
 }

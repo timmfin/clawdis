@@ -190,7 +190,9 @@ const DOCKS: Record<ChatChannelId, ChannelDock> = {
     threading: {
       resolveReplyToMode: ({ cfg }) => cfg.channels?.discord?.replyToMode ?? "off",
       buildToolContext: ({ context, hasRepliedRef }) => ({
-        currentChannelId: context.To?.trim() || undefined,
+        currentChannelId: context.To?.startsWith("channel:")
+          ? context.To.slice("channel:".length)
+          : undefined,
         currentThreadTs: context.ReplyToId,
         hasRepliedRef,
       }),

@@ -19,6 +19,8 @@ const messagingActions = new Set([
   "threadCreate",
   "threadList",
   "threadReply",
+  "threadDelete",
+  "threadRename",
   "pinMessage",
   "unpinMessage",
   "listPins",

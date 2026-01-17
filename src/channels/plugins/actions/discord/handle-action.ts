@@ -5,6 +5,7 @@ import {
   readStringParam,
 } from "../../../../agents/tools/common.js";
 import { handleDiscordAction } from "../../../../agents/tools/discord-actions.js";
+import { fetchChannelInfoDiscord } from "../../../../discord/send.js";
 import type { ChannelMessageActionContext } from "../../types.js";
 import { tryHandleDiscordMessageActionGuildAdmin } from "./handle-action.guild-admin.js";
 
@@ -16,8 +17,39 @@ function readParentIdParam(params: Record<string, unknown>): string | null | und
   return readStringParam(params, "parentId");
 }
 
+function resolveBoundDiscordChannelId(toolContext: ChannelMessageActionContext["toolContext"]): string | undefined {
+  const raw = toolContext?.currentChannelId?.trim();
+  if (!raw) return undefined;
+  if (raw.startsWith("channel:")) return raw.slice("channel:".length).trim() || undefined;
+  return raw;
+}
+
+async function assertDiscordThreadInCurrentChannel(params: {
+  threadId: string;
+  ctx: Pick<ChannelMessageActionContext, "toolContext" | "accountId">;
+}): Promise<void> {
+  const currentChannelId = resolveBoundDiscordChannelId(params.ctx.toolContext);
+  if (!currentChannelId) return;
+  if (params.threadId === currentChannelId) return;
+
+  const thread = await fetchChannelInfoDiscord(params.threadId, {
+    accountId: params.ctx.accountId ?? undefined,
+  });
+  const parentId = (thread as { parent_id?: unknown }).parent_id;
+  if (typeof parentId !== "string" || !parentId.trim()) {
+    throw new Error(
+      `Refusing to act on Discord thread "${params.threadId}": unable to resolve its parent channel.`,
+    );
+  }
+  if (parentId !== currentChannelId) {
+    throw new Error(
+      `Refusing to act on Discord thread "${params.threadId}": it belongs to channel "${parentId}", but the current channel is "${currentChannelId}".`,
+    );
+  }
+}
+
 export async function handleDiscordMessageAction(
-  ctx: Pick<ChannelMessageActionContext, "action" | "params" | "cfg">,
+  ctx: Pick<ChannelMessageActionContext, "action" | "params" | "cfg" | "toolContext" | "accountId">,
 ): Promise<AgentToolResult<unknown>> {
   const { action, params, cfg } = ctx;
 
@@ -153,6 +185,11 @@ export async function handleDiscordMessageAction(
     const autoArchiveMinutes = readNumberParam(params, "autoArchiveMin", {
       integer: true,
     });
+    const type =
+      messageId !== undefined
+        ? undefined
+        : (readNumberParam(params, "type", { integer: true }) ??
+          readNumberParam(params, "threadType", { integer: true }));
     return await handleDiscordAction(
       {
         action: "threadCreate",
@@ -160,6 +197,35 @@ export async function handleDiscordMessageAction(
         name,
         messageId,
         autoArchiveMinutes,
+        type,
+      },
+      cfg,
+    );
+  }
+
+  if (action === "thread-delete") {
+    const threadId = readStringParam(params, "threadId", { required: true });
+    await assertDiscordThreadInCurrentChannel({ threadId, ctx });
+    return await handleDiscordAction(
+      {
+        action: "threadDelete",
+        channelId: threadId,
+      },
+      cfg,
+    );
+  }
+
+  if (action === "thread-rename") {
+    const threadId = readStringParam(params, "threadId", { required: true });
+    const name =
+      readStringParam(params, "threadName") ??
+      readStringParam(params, "name", { required: true });
+    await assertDiscordThreadInCurrentChannel({ threadId, ctx });
+    return await handleDiscordAction(
+      {
+        action: "threadRename",
+        channelId: threadId,
+        name,
       },
       cfg,
     );

@@ -193,7 +193,7 @@
         "permissions": { "label": "permissions", "detailKeys": ["provider", "channelId", "to"] },
         "thread-create": {
           "label": "thread create",
-          "detailKeys": ["provider", "channelId", "threadName"]
+          "detailKeys": ["provider", "channelId", "threadName", "messageId", "threadType", "type"]
         },
         "thread-list": {
           "label": "thread list",
@@ -202,6 +202,14 @@
         "thread-reply": {
           "label": "thread reply",
           "detailKeys": ["provider", "channelId", "messageId"]
+        },
+        "thread-delete": {
+          "label": "thread delete",
+          "detailKeys": ["provider", "threadId"]
+        },
+        "thread-rename": {
+          "label": "thread rename",
+          "detailKeys": ["provider", "threadId", "threadName", "name"]
         },
         "search": { "label": "search", "detailKeys": ["provider", "guildId", "query"] },
         "sticker": { "label": "sticker", "detailKeys": ["provider", "to", "stickerId"] },
